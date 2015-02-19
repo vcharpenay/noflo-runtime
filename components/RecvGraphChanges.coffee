@@ -5,22 +5,33 @@ noflo = require 'noflo'
 class RecvGraphChanges extends noflo.Component
   constructor: ->
     @runtime = null
-    @graph = null
+    @context = null
     @changes = []
-    @changesStates = {}
     @inPorts = new noflo.InPorts
-      in:
-        datatype: 'bang'
-        description: 'Test inport'
+      runtime:
+        datatype: 'object'
+        description: 'FBP Runtime instance'
         required: true
+      context:
+	    datatype: 'object'
+		description: 'Existing context'
     @outPorts = new noflo.OutPorts
       out:
         datatype: 'object'
-        description: 'Test outport'
-        required: false
+        description: 'Merged context with changes'
 
-    @inPorts.on 'in', 'data', (@runtime) =>
-      @outPorts.out.send
-		nodes: 'could be anything right now'
+    @inPorts.on 'context', 'data', (@context) =>
+
+    @inPorts.on 'runtime', 'data', (runtime) ->
+      runtime.on 'graph' @deliver
+
+    deliver: (data) ->
+      # TODO store if no runtime is set
+      out = if @context then @context else {}
+      if data.command == 'addnode'
+        out.nodes.push data.payload
+      else if data.command == 'addedge'
+        out.edges.push data.payload
+      @outPorts.out.send out
 
 exports.getComponent = -> new RecvGraphChanges
