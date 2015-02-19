@@ -54,6 +54,7 @@
       "ListenNetwork": "components/ListenNetwork.coffee",
       "ListenProcessErrors": "components/ListenProcessErrors.coffee",
       "ListenRuntime": "components/ListenRuntime.coffee",
+      "RecvGraphChanges": "components/RecvGraphChanges.coffee",
       "SendComponent": "components/SendComponent.coffee",
       "SendGraph": "components/SendGraph.coffee",
       "SendGraphChanges": "components/SendGraphChanges.coffee"
