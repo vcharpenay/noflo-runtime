@@ -13,8 +13,8 @@ class RecvGraphChanges extends noflo.Component
         description: 'FBP Runtime instance'
         required: true
       context:
-	    datatype: 'object'
-		description: 'Existing context'
+        datatype: 'object'
+        description: 'Existing context'
     @outPorts = new noflo.OutPorts
       out:
         datatype: 'object'
@@ -23,10 +23,9 @@ class RecvGraphChanges extends noflo.Component
     @inPorts.on 'context', 'data', (@context) =>
 
     @inPorts.on 'runtime', 'data', (runtime) ->
-      runtime.on 'graph' @deliver
+      runtime.on 'graph', @deliver
 
     deliver: (data) ->
-      # TODO store if no runtime is set
       out = if @context then @context else {}
       if data.command == 'addnode'
         out.nodes.push data.payload
