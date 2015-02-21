@@ -28,9 +28,9 @@ class RecvGraphChanges extends noflo.Component
     deliver: (data) ->
       out = if @context then @context else {}
       if data.command == 'addnode'
-        out.nodes.push data.payload
+        out.runtimeGraph.processes.push data.payload
       else if data.command == 'addedge'
-        out.edges.push data.payload
+        out.runtimeGraph.connections.push data.payload
       @outPorts.out.send out
 
 exports.getComponent = -> new RecvGraphChanges
