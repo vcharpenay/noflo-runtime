@@ -23,12 +23,9 @@ class RecvGraphChanges extends noflo.AsyncComponent
 
     @inPorts.on 'context', 'data', (@context) =>
 
-    @inPorts.on 'runtime', 'data', (runtime) ->
-      runtime.on 'graph', @deliver
-
   doAsync: (runtime, callback) ->
     @outPorts.out.connect()
-    runtime.on 'data', (data) ->
+    runtime.on 'graph', (data) ->
       rtGraph =
         processes: []
         connections: []
