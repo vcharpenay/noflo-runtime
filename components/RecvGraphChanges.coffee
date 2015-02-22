@@ -30,9 +30,9 @@ class RecvGraphChanges extends noflo.AsyncComponent
         processes: []
         connections: []
       if data.command == 'addnode'
-        runtimeGraph.processes.push data.payload
+        rtGraph.processes.push data.payload
       else if data.command == 'addedge'
-        runtimeGraph.connections.push data.payload
+        rtGraph.connections.push data.payload
       out = if @context then @context else {}
       out.runtimeGraph = rtGraph
       @outPorts.out.beginGroup runtime
