@@ -18,6 +18,9 @@ class SendGraphChanges extends noflo.Component
         datatype: 'object'
         description: 'Graph to listen to'
         required: true
+      blank:
+        datatype: 'bang'
+        description: 'Instruction not to send changes'
     @outPorts = new noflo.OutPorts
       queued:
         datatype: 'int'
@@ -41,6 +44,14 @@ class SendGraphChanges extends noflo.Component
       @changes = []
       @graph = graph
       do @subscribe
+
+    @inPorts.on 'blank', 'data', () =>
+      @graph.removeListener 'endTransaction', @send
+      @graph.once 'endTransaction', () =>
+        # shoot with a blank cartridge (do nothing)
+        @sendBlank()
+        # and restore old listener
+        @graph.on 'endTransaction', @send
 
   subscribe: ->
     return if @subscribed
@@ -265,6 +276,14 @@ class SendGraphChanges extends noflo.Component
     @outPorts.queued.send @changes.length
     @changesStates = {}
 
+  sendBlank: =>
+    return unless @runtime
+    @outPorts.sent.beginGroup @graphIdentifier() if @graph
+    @outPorts.sent.send true
+    @outPorts.sent.endGroup() if @graph
+    @outPorts.queued.send @changes.length
+    @changesStates = {}
+  
   shutdown: ->
     do @unsubscribe
 

@@ -2,7 +2,7 @@ noflo = require 'noflo'
 
 # @runtime all
 
-class RecvGraphChanges extends noflo.AsyncComponent
+class RecvGraphChanges extends noflo.Component
   constructor: ->
     @runtime = null
     @context = null
@@ -19,25 +19,20 @@ class RecvGraphChanges extends noflo.AsyncComponent
       out:
         datatype: 'object'
         description: 'Merged context with changes'
+      received:
+        datatype: 'bang'
+        description: 'Notification that a message was received'
     super 'runtime', 'out'
 
     @inPorts.on 'context', 'data', (@context) =>
 
-  doAsync: (runtime, callback) ->
-    @outPorts.out.connect()
-    runtime.on 'graph', (data) ->
-      rtGraph =
-        processes: []
-        connections: []
-      if data.command == 'addnode'
-        rtGraph.processes.push data.payload
-      else if data.command == 'addedge'
-        rtGraph.connections.push data.payload
-      out = if @context then @context else {}
-      out.runtimeGraph = rtGraph
-      @outPorts.out.beginGroup runtime
-      @outPorts.out.send out
-      @outPorts.out.endGroup()
-      callback null
+    @inPorts.on 'runtime', 'data', (@runtime) =>
+      runtime.on 'graph', (data) =>
+        out = if @context then @context else {}
+        @outPorts.out.send
+          runtimeGraph: data
+        @outPorts.received.beginGroup() @runtime.name if @runtime
+        @outPorts.received.send true
+        @outPorts.received.endGroup() if @runtime
 
 exports.getComponent = -> new RecvGraphChanges
