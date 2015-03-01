@@ -20,7 +20,7 @@ class RecvGraphChanges extends noflo.Component
         description: 'Notification that a message was received'
 
     @inPorts.on 'runtime', 'data', (@runtime) =>
-      runtime.on 'graph', (data) =>
+      @runtime.on 'graph', (data) =>
         @outPorts.out.send
           runtimeGraph: data
         @outPorts.received.beginGroup() @runtime.name if @runtime
