@@ -269,7 +269,7 @@ class SendGraphChanges extends noflo.Component
       @changes = @changes.filter (change) =>
         @blankChanges.every (blank) ->
           # TODO deep comparison?
-		  blank.topic isnt change.topic
+          blank.topic isnt change.topic
       @blankChanges = []
     while @changes.length
       change = @changes.shift()
