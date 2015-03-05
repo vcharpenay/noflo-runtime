@@ -266,9 +266,11 @@ class SendGraphChanges extends noflo.Component
   send: =>
     return unless @runtime
     if @blankChanges.length
-      changes = changes.filter (change) ->
-        (blankChanges.indexOf change) isnt -1
-      blankChanges = []
+      @changes = @changes.filter (change) =>
+        @blankChanges.every (blank) ->
+          # TODO deep comparison?
+		  blank.topic isnt change.topic
+      @blankChanges = []
     while @changes.length
       change = @changes.shift()
       @runtime.sendGraph change.topic, change.payload
